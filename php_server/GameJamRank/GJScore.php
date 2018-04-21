@@ -81,7 +81,7 @@ setTimeout(function(){
 </script>
 </head>
 <body>
-<h1><?=$gameName?> 게임 순위표!</h1>
+<h1><?=$gameName?> 순위표!</h1>
 <table class="type09">
     <thead>
     <tr>
