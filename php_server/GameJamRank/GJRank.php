@@ -67,13 +67,30 @@ function SelectQuery($sql)
     return $result;
 }
 
+function HtmlTagCheck($str)
+{
+    if(preg_match("[\<(/?[^\>]+)\>]",$str))
+    {
+        return true;
+    }
+    return false;
+}
+
 
 switch($command)
 {
     case "getOrCreateGameID":
-    $gameid = $content->gameid;
-    $gamename = $content->gamename;
-    $order = $content->order;
+    $gameid = mysql_real_escape_string($content->gameid, $db);
+    $gamename = mysql_real_escape_string($content->gamename, $db);
+    $order = mysql_real_escape_string($content->order, $db);
+
+    if(HtmlTagCheck($gameid) || HtmlTagCheck($gamename))
+    {
+        $retJson = array("message"=>"GameID, GameName에 HTML 태그가 들어간것 같습니다.");
+        MakeResult(false, $retJson);
+        mysql_close($db);
+        exit;
+    }
     
     $sql = "SELECT id FROM ".$table_gameid." WHERE game_id='".$gameid."'";
     $result = SelectQuery($sql);
@@ -101,8 +118,16 @@ switch($command)
     break;
 
     case "getOrCreateNickname":
-    $gameid = $content->gameid;
-    $nickname = $content->nickname;
+    $gameid = mysql_real_escape_string($content->gameid, $db);
+    $nickname = mysql_real_escape_string($content->nickname, $db);
+
+    if(HtmlTagCheck($nickname))
+    {
+        $retJson = array("message"=>"Nickname 에 HTML 태그가 들어간것 같습니다.");
+        MakeResult(false, $retJson);
+        mysql_close($db);
+        exit;
+    }
 
     $sql = "SELECT id FROM ".$table_socre." WHERE game_id=".$gameid." AND nickname='".$nickname."'";
     $result = SelectQuery($sql);
@@ -131,9 +156,17 @@ switch($command)
 
 
     case "postScore":  //점수보내기
-    $nickname = $content->nickname;
-    $gameid = $content->gameid;
-    $score = $content->score;
+    $nickname = mysql_real_escape_string($content->nickname, $db);
+    $gameid = mysql_real_escape_string($content->gameid, $db);
+    $score = mysql_real_escape_string($content->score, $db);
+
+    if(HtmlTagCheck($nickname))
+    {
+        $retJson = array("message"=>"Nickname 에 HTML 태그가 들어간것 같습니다.");
+        MakeResult(false, $retJson);
+        mysql_close($db);
+        exit;
+    }
 
     $sql = "SELECT score_order FROM ".$table_gameid." WHERE id=".$gameid;
     $result = SelectQuery($sql);
